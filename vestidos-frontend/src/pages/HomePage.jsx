@@ -3,12 +3,11 @@ import productService from '../services/productService'
 import useCartStore from '../store/cartStore'
 
 function HomePage() {
+  //COMPONENTE PARA MOSTRAR LOS PRODUCTOS Y PERMITIR AGREGAR AL CARRITO
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const addItem = useCartStore(state => state.addItem)
-  const items = useCartStore(state => state.items)
-  const totalItems = items.reduce((total, item) => total + item.cantidad, 0)
 
   useEffect(() => {
     productService.getAllProducts()
@@ -27,9 +26,8 @@ function HomePage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px' }}>
+      <div style={{padding: '16px'}}>
         <h1>Tienda de Vestidos</h1>
-        <p>🛒 {totalItems} items en el carrito</p>
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', padding: '16px' }}>
