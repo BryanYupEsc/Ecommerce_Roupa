@@ -1,0 +1,13 @@
+# Backend - archivos compilados (pesan mucho)
+vestidos-backend/backend/target/
+
+# Frontend - librerías descargadas (pesan mucho)
+vestidos-frontend/node_modules/
+vestidos-frontend/dist/
+
+# Variables de entorno (datos privados)
+.env
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
