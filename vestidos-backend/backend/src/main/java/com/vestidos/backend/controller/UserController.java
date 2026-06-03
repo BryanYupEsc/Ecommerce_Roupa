@@ -39,7 +39,9 @@ public class UserController {
             User newUser = userService.createUser(user);
             return ResponseEntity.ok(newUser);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest()
+                    .header("content-type", "application/json")
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
