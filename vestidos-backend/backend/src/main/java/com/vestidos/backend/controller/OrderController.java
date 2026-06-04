@@ -15,6 +15,8 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private com.vestidos.backend.repository.OrderItemRepository orderItemRepository;
 
     // GET /api/orders
     // Admin ve todos los pedidos
@@ -51,6 +53,17 @@ public class OrderController {
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
         return orderService.createOrder(order);
+    }
+
+    // POST /api/orders/{id}/items  
+    // Guarda los vestidos dentro de un pedido
+    @PostMapping("/{id}/items")
+    public ResponseEntity<OrderItem> addOrderItem(@PathVariable Integer id,
+                                            @RequestBody OrderItem item) {
+        item.setOrder(new com.vestidos.backend.model.Order());
+        item.getOrder().setId(id);
+        OrderItem saved = orderItemRepository.save(item);
+        return ResponseEntity.ok(saved);
     }
 
     // PUT /api/orders/1/estado
