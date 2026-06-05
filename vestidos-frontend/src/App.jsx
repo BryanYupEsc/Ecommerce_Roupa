@@ -7,6 +7,8 @@ import DashboardPage from './pages/admin/DashboardPage'
 import ProductsAdminPage from './pages/admin/ProductAdminPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import RegisterPage from './pages/RegisterPage'
+import CheckoutPage from './pages/CheckoutPage'
+import OrderSuccessPage from './pages/OrderSuccessPage'
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
       <Route path="/admin/products" element={<ProductsAdminPage />} />
       <Route path="/products/:id" element={<ProductDetailPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/order-success/:id" element={<OrderSuccessPage />} />
     </Routes>
     </>
   )
