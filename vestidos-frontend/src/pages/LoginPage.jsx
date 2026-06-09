@@ -9,39 +9,38 @@ function LoginPage() {
     const navigate = useNavigate()
 
     const handleLogin = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+      e.preventDefault()
+      setLoading(true)
+      setError(null)
 
-    try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      })
+      try {
+        const response = await fetch('http://localhost:8080/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        })
 
-      const data = await response.json()
+      // Si hay error leemos como texto, si es exitoso como JSON
+        if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(errorText || 'Email o contraseña incorrectos')
+        }
 
-      console.log('Respuesta del backend:', data)
+        const data = await response.json()
+        localStorage.setItem('user', JSON.stringify(data))
 
-      if (!response.ok) {
-        throw new Error(data || 'Email o contraseña incorrectos')
+        if (data.rol === 'ADMIN') {
+          navigate('/admin')
+        } else {
+          navigate('/')
+        }
+
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
       }
-
-      localStorage.setItem('user', JSON.stringify(data))
-
-      if (data.rol === 'ADMIN') {
-        navigate('/admin')
-      } else {
-        navigate('/')
-      }
-
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
     }
-  }
 
     //comenzacmo con el return
     return (

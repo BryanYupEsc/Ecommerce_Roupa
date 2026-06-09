@@ -37,6 +37,17 @@ function HomePage() {
             style={{ border: '1px solid #ccc', padding: '16px', width: '200px', borderRadius: '8px', cursor: 'pointer' }}
           >
             <div onClick={() => navigate(`/products/${product.id}`)}>
+              {product.imagenUrl ? (
+                <img
+                src={product.imagenUrl}
+                alt={product.nombre}
+                style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '4px', marginBottom: '8px' }}
+                />
+              ) : (
+                <div style={{ width: '100%', height: '200px', backgroundColor: '#f0f0f0', borderRadius: '4px', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px' }}>
+                  👗
+                </div>
+              )}
               <h3>{product.nombre}</h3>
               <p style={{ fontSize: '12px', color: '#666' }}>{product.descripcion}</p>
               <p><strong>${product.precio}</strong></p>

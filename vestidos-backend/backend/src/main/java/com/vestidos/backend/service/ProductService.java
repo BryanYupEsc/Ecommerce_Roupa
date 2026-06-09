@@ -1,6 +1,8 @@
 package com.vestidos.backend.service;
 
+import com.vestidos.backend.model.Category;
 import com.vestidos.backend.model.Product;
+import com.vestidos.backend.repository.CategoryRepository;
 import com.vestidos.backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,33 +15,35 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    // Obtener todos los vestidos activos
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     public List<Product> getAllProducts() {
         return productRepository.findByActivoTrue();
     }
 
-    // Obtener un vestido por id
     public Optional<Product> getProductById(Integer id) {
         return productRepository.findById(id);
     }
 
-    // Obtener vestidos por categoría
     public List<Product> getProductsByCategory(Integer categoryId) {
         return productRepository.findByCategoryId(categoryId);
     }
 
-    // Obtener vestidos por talla
     public List<Product> getProductsByTalla(String talla) {
         return productRepository.findByTalla(talla);
     }
 
-    // Crear un vestido nuevo (para el admin)
     public Product createProduct(Product product) {
         product.setActivo(true);
+        if (product.getCategory() != null && product.getCategory().getId() != null) {
+            Category category = categoryRepository.findById(product.getCategory().getId())
+                .orElse(null);
+            product.setCategory(category);
+        }
         return productRepository.save(product);
     }
 
-    // Actualizar un vestido (para el admin)
     public Optional<Product> updateProduct(Integer id, Product productDetails) {
         return productRepository.findById(id).map(product -> {
             product.setNombre(productDetails.getNombre());
@@ -55,7 +59,6 @@ public class ProductService {
         });
     }
 
-    // Eliminar un vestido (desactivar, no borrar)
     public void deleteProduct(Integer id) {
         productRepository.findById(id).ifPresent(product -> {
             product.setActivo(false);

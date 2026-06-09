@@ -49,6 +49,7 @@ public class ProductController {
     // el admin crea un vestido nuevo
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
+        System.out.println("Producto recibido en el backend: " + product.getImagenUrl());
         return productService.createProduct(product);
     }
 

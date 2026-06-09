@@ -30,3 +30,20 @@ INSERT INTO products (nombre, descripcion, precio, stock, talla, color, material
 ('Vestido Fiesta Lentejuelas', 'Vestido corto con lentejuelas plateadas, ideal para fiestas',      159.90,  6, 'M', 'Plateado', '90% Poliéster, 10% Elastano', 4),
 ('Vestido Formal Oficina',     'Vestido recto a la rodilla, sobrio y elegante',                    139.90, 12, 'L', 'Azul',     '70% Lana, 30% Poliéster',     5),
 ('Vestido Formal Midi',        'Vestido midi con cinturón incluido, perfecto para reuniones',      149.90,  9, 'M', 'Gris',     '65% Algodón, 35% Poliéster',  5);
+
+-- Para evitar problemas de integridad referencial, primero eliminamos los datos relacionados antes de eliminar los usuarios
+-- Primero borramos los items de los pedidos
+DELETE FROM order_items WHERE order_id IN (
+    SELECT id FROM orders WHERE user_id IN (1, 2)
+);
+
+-- Luego borramos los pedidos
+DELETE FROM orders WHERE user_id IN (1, 2);
+
+-- Ahora sí podemos borrar los usuarios
+DELETE FROM users WHERE email IN ('admin@vestidos.com', 'maria@email.com');
+
+-- Volvemos a insertar con contraseñas encriptadas
+INSERT INTO users (nombre, email, password, rol) VALUES
+('Admin', 'admin@vestidos.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN'),
+('Maria Silva', 'maria@email.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER');

@@ -45,10 +45,6 @@ public class AuthController {
 
         return ResponseEntity.ok(user);
     }
-    @GetMapping("/hash/{password}")
-    public String generateHash(@PathVariable String password){
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(password);
-    }
+    
     
 }

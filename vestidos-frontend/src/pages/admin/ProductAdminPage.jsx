@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import productService from '../../services/productService'
+import cloudinaryService from '../../services/cloudinaryService'
 
 function ProductsAdminPage() {
   const [products, setProducts] = useState([])
@@ -10,6 +11,8 @@ function ProductsAdminPage() {
     nombre: '', descripcion: '', precio: '', stock: '',
     talla: '', color: '', material: '', imagenUrl: '', categoryId: ''
   })
+  const [imageFile, setImageFile] = useState(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   useEffect(() => {
     loadProducts()
@@ -49,7 +52,25 @@ function ProductsAdminPage() {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    let imagenUrl = form.imagenUrl
+    
+    // si el admin seleccino una iamge nueva, la subimos a Cloudinary
+    if (imageFile) {
+      setUploadingImage(true)
+      try{
+        imagenUrl = await cloudinaryService.uploadImage(imageFile)
+        console.log('URL de clouddinary:',imagenUrl);
+        
+      } catch (error) {
+        alert('Error al subir la imagen')
+        setUploadingImage(false)
+        return
+      } 
+        setUploadingImage(false)
+      
+    }
+
     const productData = {
       nombre: form.nombre,
       descripcion: form.descripcion,
@@ -58,9 +79,11 @@ function ProductsAdminPage() {
       talla: form.talla,
       color: form.color,
       material: form.material,
-      imagenUrl: form.imagenUrl,
+      imagenUrl: imagenUrl,
       category: { id: parseInt(form.categoryId) }
     }
+    
+    console.log('Producto a guardar:', productData) 
 
     if (editingProduct) {
       productService.updateProduct(editingProduct.id, productData)
@@ -112,7 +135,7 @@ function ProductsAdminPage() {
               { label: 'Talla', name: 'talla', type: 'text' },
               { label: 'Color', name: 'color', type: 'text' },
               { label: 'Material', name: 'material', type: 'text' },
-              { label: 'URL Imagen', name: 'imagenUrl', type: 'text' },
+              // La URL de la imagen se maneja con un input file, no es editable directamente
               { label: 'ID Categoría', name: 'categoryId', type: 'number' },
             ].map(field => (
               <div key={field.name}>
@@ -138,12 +161,37 @@ function ProductsAdminPage() {
             </div>
           </div>
 
+            
+          <div style={{ gridColumn: '1 / -1' }}>
+          <label style={{ display: 'block', marginBottom: '4px' }}>
+            Imagen del vestido
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              console.log('archivo seleccionado', e.target.files[0])              
+              setImageFile(e.target.files[0])}}
+            style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}
+          />
+          {editingProduct?.imagenUrl && (
+            <img
+              src={editingProduct.imagenUrl}
+              alt="imagen actual"
+              style={{ width: '80px', height: '80px', objectFit: 'cover', marginTop: '8px', borderRadius: '4px' }}
+            />
+          )}
+        </div>
+          
+
+
           <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
             <button
               onClick={handleSubmit}
+              disabled={uploadingImage}
               style={{ backgroundColor: '#000', color: '#fff', padding: '10px 20px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
             >
-              {editingProduct ? 'Guardar cambios' : 'Crear vestido'}
+              {uploadingImage ? 'Subiendo imagen...' : editingProduct ? 'Guardar cambios' : 'Crear vestido'}
             </button>
             <button
               onClick={handleCancel}

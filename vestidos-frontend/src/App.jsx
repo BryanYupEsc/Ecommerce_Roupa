@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage'
 import Navbar from './components/Navbar'
 import DashboardPage from './pages/admin/DashboardPage'
 import ProductsAdminPage from './pages/admin/ProductAdminPage'
+import OrderAdminPage from './pages/admin/OrderAdminPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import RegisterPage from './pages/RegisterPage'
 import CheckoutPage from './pages/CheckoutPage'
@@ -24,9 +25,10 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/order-success/:id" element={<OrderSuccessPage />} />
+      <Route path="/admin/orders" element={<OrderAdminPage />} />
     </Routes>
     </>
   )
 }
 
-export default App
+export default App 
