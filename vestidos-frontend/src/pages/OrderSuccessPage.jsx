@@ -5,17 +5,29 @@ function OrderSuccessPage() {
   const navigate = useNavigate()
 
   return (
-    <div style={{ maxWidth: '500px', margin: '80px auto', padding: '32px', textAlign: 'center', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <div style={{ fontSize: '60px', marginBottom: '16px' }}>✅</div>
-      <h1 style={{ marginBottom: '8px' }}>¡Pedido confirmado!</h1>
-      <p style={{ color: '#666', marginBottom: '8px' }}>Tu pedido #{id} fue registrado correctamente.</p>
-      <p style={{ color: '#666', marginBottom: '32px' }}>Nos pondremos en contacto contigo pronto.</p>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', padding: '60px 32px', textAlign: 'center' }}>
+      <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: 'var(--negro)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px' }}>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--dorado)" strokeWidth="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
 
-      <button
-        onClick={() => navigate('/')}
-        style={{ backgroundColor: '#000', color: '#fff', padding: '12px 24px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px' }}
-      >
-        Seguir comprando
+      <p style={{ color: 'var(--dorado)', fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px' }}>
+        Confirmado
+      </p>
+      <h1 className="titulo-elegante" style={{ fontSize: '48px', marginBottom: '8px' }}>
+        ¡Pedido Realizado!
+      </h1>
+      <div style={{ height: '1px', width: '60px', backgroundColor: 'var(--dorado)', margin: '20px auto' }}></div>
+      <p style={{ color: 'var(--gris-texto)', fontSize: '13px', letterSpacing: '1px', marginBottom: '8px' }}>
+        Tu pedido #{id} fue registrado correctamente.
+      </p>
+      <p style={{ color: 'var(--gris-texto)', fontSize: '13px', letterSpacing: '1px', marginBottom: '48px' }}>
+        Nos pondremos en contacto contigo pronto.
+      </p>
+
+      <button onClick={() => navigate('/')} className="btn-primary" style={{ padding: '18px 48px', fontSize: '11px', letterSpacing: '3px' }}>
+        Seguir Comprando
       </button>
     </div>
   )

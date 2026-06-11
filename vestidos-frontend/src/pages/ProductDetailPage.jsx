@@ -3,91 +3,141 @@ import { useParams, useNavigate } from 'react-router-dom'
 import productService from '../services/productService'
 import useCartStore from '../store/cartStore'
 
-
 function ProductDetailPage() {
-    const { id } = useParams()
-    const navigate = useNavigate()
-    const [product, setProduct] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [added, setAdded] = useState(false)
-    const addItem = useCartStore(state => state.addItem)
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [added, setAdded] = useState(false)
+  const addItem = useCartStore(state => state.addItem)
 
+  useEffect(() => {
+    productService.getProductById(id)
+      .then(data => {
+        setProduct(data)
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [id])
 
-    useEffect(() => {
-        productService.getProductById(id)
-            .then(data => {
-                setProduct(data)
-                setLoading(false)
-            })
-            .catch(()=> {
-                setLoading(false)
-            })
-    }, [id])
+  const handleAddToCart = () => {
+    addItem(product)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
+  }
 
-    const handleAddToCart = () => {
-        addItem(product)
-        setAdded(true)
-        setTimeout(() => setAdded(false), 2000)
-    }
+  if (loading) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+      <p style={{ fontFamily: 'var(--font-titulo)', fontSize: '24px', letterSpacing: '4px', color: 'var(--gris-texto)' }}>CARGANDO...</p>
+    </div>
+  )
 
-    if (loading) return <p style={{ padding: '32px'}}>Cargando...</p>
-    if (!product) return <p style={{ padding: '32px'}}>Vestido no encontrado</p>
+  if (!product) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+      <p style={{ fontFamily: 'var(--font-titulo)', fontSize: '24px', letterSpacing: '4px' }}>Vestido no encontrado</p>
+    </div>
+  )
 
-    return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px' }}>
-      <button
-        onClick={() => navigate('/')}
-        style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer', fontSize: '16px', marginBottom: '24px' }}
-      >
-        ← Volver al catálogo
-      </button>
+  return (
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 32px' }}>
 
-      <div style={{ display: 'flex', gap: '32px' }}>
+      {/* Breadcrumb */}
+      <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span
+          onClick={() => navigate('/')}
+          style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer', color: 'var(--gris-texto)' }}
+        >
+          Colección
+        </span>
+        <span style={{ color: 'var(--gris-texto)' }}>→</span>
+        <span style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--dorado)' }}>
+          {product.nombre}
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
 
         {/* Imagen */}
-        <div style={{ width: '350px', height: '400px', backgroundColor: '#f0f0f0', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ position: 'relative', backgroundColor: 'var(--gris-claro)', aspectRatio: '3/4', overflow: 'hidden' }}>
           {product.imagenUrl ? (
-            <img src={product.imagenUrl} alt={product.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+            <img
+              src={product.imagenUrl}
+              alt={product.nombre}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
           ) : (
-            <span style={{ fontSize: '80px' }}>👗</span>
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '80px' }}>
+              👗
+            </div>
+          )}
+          {product.category && (
+            <div style={{
+              position: 'absolute', top: '20px', left: '20px',
+              backgroundColor: 'var(--negro)', color: 'var(--dorado)',
+              padding: '6px 16px', fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase'
+            }}>
+              {product.category.nombre}
+            </div>
           )}
         </div>
 
-        {/* Información */}
-        <div style={{ flex: 1 }}>
-          <h1 style={{ marginBottom: '8px' }}>{product.nombre}</h1>
-          <p style={{ color: '#666', marginBottom: '16px' }}>{product.category?.nombre}</p>
-          <h2 style={{ fontSize: '28px', marginBottom: '24px' }}>${product.precio}</h2>
+        {/* Info */}
+        <div style={{ paddingTop: '20px' }}>
+          <p style={{ color: 'var(--dorado)', fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px' }}>
+            Exclusivo
+          </p>
+          <h1 style={{ fontFamily: 'var(--font-titulo)', fontSize: '48px', fontWeight: 300, letterSpacing: '2px', marginBottom: '8px' }}>
+            {product.nombre}
+          </h1>
+          <div style={{ height: '1px', width: '60px', backgroundColor: 'var(--dorado)', margin: '20px 0' }}></div>
+          <p style={{ fontFamily: 'var(--font-titulo)', fontSize: '36px', marginBottom: '32px', color: 'var(--negro)' }}>
+            R$ {product.precio}
+          </p>
 
-          <div style={{ marginBottom: '16px' }}>
-            <p><strong>Descripción:</strong></p>
-            <p style={{ color: '#444' }}>{product.descripcion}</p>
-          </div>
+          <p style={{ fontSize: '13px', lineHeight: '1.8', color: 'var(--gris-texto)', marginBottom: '40px', letterSpacing: '0.5px' }}>
+            {product.descripcion}
+          </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-            <div style={{ backgroundColor: '#f9f9f9', padding: '12px', borderRadius: '4px' }}>
-              <p style={{ margin: 0, fontSize: '12px', color: '#666' }}>TALLA</p>
-              <p style={{ margin: 0, fontWeight: 'bold' }}>{product.talla}</p>
-            </div>
-            <div style={{ backgroundColor: '#f9f9f9', padding: '12px', borderRadius: '4px' }}>
-              <p style={{ margin: 0, fontSize: '12px', color: '#666' }}>COLOR</p>
-              <p style={{ margin: 0, fontWeight: 'bold' }}>{product.color}</p>
-            </div>
-            <div style={{ backgroundColor: '#f9f9f9', padding: '12px', borderRadius: '4px' }}>
-              <p style={{ margin: 0, fontSize: '12px', color: '#666' }}>MATERIAL</p>
-              <p style={{ margin: 0, fontWeight: 'bold' }}>{product.material}</p>
-            </div>
-            <div style={{ backgroundColor: '#f9f9f9', padding: '12px', borderRadius: '4px' }}>
-              <p style={{ margin: 0, fontSize: '12px', color: '#666' }}>STOCK</p>
-              <p style={{ margin: 0, fontWeight: 'bold' }}>{product.stock} disponibles</p>
-            </div>
+          {/* Detalles */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', backgroundColor: 'var(--gris-medio)', marginBottom: '40px' }}>
+            {[
+              { label: 'Talla', value: product.talla },
+              { label: 'Color', value: product.color },
+              { label: 'Material', value: product.material },
+              { label: 'Disponibles', value: `${product.stock} unidades` },
+            ].map(item => (
+              <div key={item.label} style={{ backgroundColor: 'var(--blanco)', padding: '16px 20px' }}>
+                <p style={{ fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gris-texto)', marginBottom: '4px' }}>
+                  {item.label}
+                </p>
+                <p style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '1px' }}>
+                  {item.value}
+                </p>
+              </div>
+            ))}
           </div>
 
           <button
             onClick={handleAddToCart}
-            style={{ width: '100%', padding: '14px', backgroundColor: added ? '#444' : '#000', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', transition: 'background-color 0.3s' }}
+            className="btn-primary"
+            style={{
+              width: '100%',
+              padding: '18px',
+              fontSize: '11px',
+              letterSpacing: '3px',
+              backgroundColor: added ? 'var(--dorado)' : 'var(--negro)',
+              color: added ? 'var(--negro)' : 'var(--blanco)'
+            }}
           >
-            {added ? '✓ Agregado al carrito' : 'Agregar al carrito'}
+            {added ? '✓ AÑADIDO AL CARRITO' : 'AÑADIR AL CARRITO'}
+          </button>
+
+          <button
+            onClick={() => navigate('/')}
+            className="btn-secondary"
+            style={{ width: '100%', padding: '18px', fontSize: '11px', letterSpacing: '3px', marginTop: '12px' }}
+          >
+            SEGUIR VIENDO
           </button>
         </div>
       </div>
