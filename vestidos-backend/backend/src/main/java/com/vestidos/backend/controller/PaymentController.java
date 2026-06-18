@@ -17,6 +17,9 @@ public class PaymentController {
     @PostMapping("/create-preference")
     public ResponseEntity<?> createPreference(@RequestBody Map<String, Object> body) {
         try {
+            System.out.println("=== LLEGÓ PETICIÓN A CREATE-PREFERENCE ===");
+            System.out.println("Body recibido: " + body);
+
             List<Map<String, Object>> cartItems = (List<Map<String, Object>>) body.get("items");
 
             // Construimos los items para MercadoPago
@@ -67,6 +70,35 @@ public class PaymentController {
         } catch (Exception e) {
             System.out.println("ERROR MERCADOPAGO: " + e.getMessage());
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/verify/{paymentId}")
+    public ResponseEntity<?> verifyPayment(@PathVariable String paymentId){
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(accessToken);
+
+            HttpEntity<Void> request = new HttpEntity<>(headers);
+            ResponseEntity<Map> response = restTemplate.exchange(
+                "https://api.mercadopago.com/v1/payments/" + paymentId,
+                HttpMethod.GET,
+                request,
+                Map.class
+            );
+
+            Map<String, Object> paymentData = response.getBody();
+            String status = (String) paymentData.get("status");
+            String externalReference = (String) paymentData.get("external_reference");
+            return ResponseEntity.ok(Map.of(
+                "status", status,
+                "approved", "approved".equals(status),
+                "orderId", externalReference
+            ));
+        } catch (Exception e) {
+            System.out.println("ERROR VERIFICANDO EL PAGO: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error al verificar el pago");
         }
     }
 }
