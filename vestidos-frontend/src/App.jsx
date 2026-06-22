@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage'
 import CartPage from './pages/CartPage'
 import LoginPage from './pages/LoginPage'
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import DashboardPage from './pages/admin/DashboardPage'
 import ProductsAdminPage from './pages/admin/ProductAdminPage'
 import OrderAdminPage from './pages/admin/OrderAdminPage'
@@ -10,6 +11,7 @@ import ProductDetailPage from './pages/ProductDetailPage'
 import RegisterPage from './pages/RegisterPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
+import PaymentSuccessPage from './pages/PaymentSuccessPage'
 
 function App() {
   return (
@@ -26,7 +28,9 @@ function App() {
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/order-success/:id" element={<OrderSuccessPage />} />
       <Route path="/admin/orders" element={<OrderAdminPage />} />
+      <Route path="/payment-success" element={<PaymentSuccessPage />} />
     </Routes>
+    <Footer />
     </>
   )
 }

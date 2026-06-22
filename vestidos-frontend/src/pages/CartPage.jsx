@@ -10,10 +10,18 @@ function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '70vh', gap: '24px' }}>
-        <p style={{ fontFamily: 'var(--font-titulo)', fontSize: '48px', fontWeight: 300, letterSpacing: '4px' }}>Tu carrito está vacío</p>
-        <div style={{ height: '1px', width: '60px', backgroundColor: 'var(--dorado)' }}></div>
-        <button onClick={() => navigate('/')} className="btn-primary">Ver Colección</button>
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '70vh', gap: '24px' }}>
+        <p style={{
+          fontFamily: 'var(--font-titulo)', fontSize: '48px', fontWeight: 300, letterSpacing: '4px' }}>Tu carrito está vacío</p>
+        <div style={{ 
+          height: '1px', width: '60px', backgroundColor: 'var(--dorado)' }}></div>
+        <button 
+        onClick={() => navigate('/')} 
+        className="btn-primary"
+        >
+          Ver Colección
+        </button>
       </div>
     )
   }
@@ -26,7 +34,12 @@ function CartPage() {
         <div style={{ height: '1px', width: '60px', backgroundColor: 'var(--dorado)', margin: '20px auto 0' }}></div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '60px', alignItems: 'start' }}>
+      <div className='checkout-grid'
+        style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 380px', 
+        gap: '60px', 
+        alignItems: 'start' }}>
 
         {/* Items */}
         <div>

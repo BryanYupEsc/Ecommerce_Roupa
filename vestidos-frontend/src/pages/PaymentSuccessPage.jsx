@@ -5,18 +5,39 @@ function PaymentSuccessPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [whatsappUrl, setWhatsappUrl] = useState('')
+  const [verificando, setVerificando] = useState(true)
+  const [pagoAprobado, setPagoAprobado] = useState(false)
+  const [orderId, setOrderId] = useState(null)
 
-  const orderId = searchParams.get('external_reference')
-  const paymentStatus = searchParams.get('collection_status')
+  const paymentId = searchParams.get('payment_id')
 
   useEffect(() => {
-    if (orderId) {
-      // Traemos los detalles del pedido para el mensaje de WhatsApp
-      Promise.all([
-        fetch(`http://localhost:8080/api/orders/${orderId}`).then(r => r.json()),
-        fetch(`http://localhost:8080/api/orders/${orderId}/items`).then(r => r.json())
-      ]).then(([order, items]) => {
-        let mensaje = `🛍️ *PEDIDO #${orderId} - PAGO CONFIRMADO* ✅\n\n`
+    if (!paymentId) {
+      setVerificando(false)
+      return
+    }
+
+    // Verificamos el pago real contra MercadoPago
+    fetch(`http://localhost:8080/api/payment/verify/${paymentId}`)
+      .then(res => res.json())
+      .then(data => {
+        setPagoAprobado(data.approved)
+        setOrderId(data.orderId)
+        setVerificando(false)
+
+        if (data.approved && data.orderId) {
+          // Traemos el pedido y armamos el mensaje de WhatsApp
+          return Promise.all([
+            fetch(`http://localhost:8080/api/orders/${data.orderId}`).then(r => r.json()),
+            fetch(`http://localhost:8080/api/orders/${data.orderId}/items`).then(r => r.json())
+          ])
+        }
+      })
+      .then(result => {
+        if (!result) return
+        const [order, items] = result
+
+        let mensaje = `🛍️ *PEDIDO #${order.id} - PAGO CONFIRMADO* ✅\n\n`
         mensaje += `👤 *Cliente:* ${order.user?.nombre}\n`
         mensaje += `📧 *Email:* ${order.user?.email}\n`
         mensaje += `📍 *Dirección:* ${order.direccion}\n\n`
@@ -28,11 +49,40 @@ function PaymentSuccessPage() {
         mensaje += `\n💰 *TOTAL PAGADO: R$ ${order.total}*\n\n`
         mensaje += `Por favor confirmar disponibilidad y detalles de entrega. ¡Gracias! 🙏`
 
-        const numero = 'TU_NUMERO'
-        setWhatsappUrl(`https://wa.me/${5511988836681}?text=${encodeURIComponent(mensaje)}`)
+        const numero = '5511988836681'
+        setWhatsappUrl(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`)
       })
-    }
-  }, [orderId])
+      .catch(() => setVerificando(false))
+  }, [paymentId])
+
+  if (verificando) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <p style={{ fontFamily: 'var(--font-titulo)', fontSize: '24px', letterSpacing: '4px', color: 'var(--gris-texto)' }}>
+          VERIFICANDO PAGO...
+        </p>
+      </div>
+    )
+  }
+
+  if (!pagoAprobado) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', padding: '60px 32px', textAlign: 'center' }}>
+        <p style={{ color: '#cc0000', fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px' }}>
+          Pago no confirmado
+        </p>
+        <h1 className="titulo-elegante" style={{ fontSize: '40px', marginBottom: '24px' }}>
+          No pudimos verificar tu pago
+        </h1>
+        <p style={{ color: 'var(--gris-texto)', fontSize: '13px', marginBottom: '40px', maxWidth: '450px' }}>
+          Si ya completaste el pago, puede tardar unos segundos en confirmarse. Si el problema persiste, contáctanos por WhatsApp.
+        </p>
+        <button onClick={() => navigate('/')} className="btn-primary" style={{ padding: '18px 48px', fontSize: '11px', letterSpacing: '3px' }}>
+          Volver al inicio
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', padding: '60px 32px', textAlign: 'center' }}>
@@ -44,7 +94,7 @@ function PaymentSuccessPage() {
       </div>
 
       <p style={{ color: 'var(--dorado)', fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px' }}>
-        Pago confirmado
+        Pago verificado y confirmado
       </p>
       <h1 className="titulo-elegante" style={{ fontSize: '48px', marginBottom: '8px' }}>
         ¡Gracias por tu compra!
@@ -64,19 +114,10 @@ function PaymentSuccessPage() {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              backgroundColor: '#25D366',
-              color: '#fff',
-              padding: '18px 32px',
-              fontSize: '11px',
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
-              fontFamily: 'var(--font-cuerpo)',
-              fontWeight: 500
+              backgroundColor: '#25D366', color: '#fff', padding: '18px 32px',
+              fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase',
+              textDecoration: 'none', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', gap: '12px', fontFamily: 'var(--font-cuerpo)', fontWeight: 500
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -86,11 +127,7 @@ function PaymentSuccessPage() {
           </a>
         )}
 
-        <button
-          onClick={() => navigate('/')}
-          className="btn-primary"
-          style={{ padding: '18px', fontSize: '11px', letterSpacing: '3px' }}
-        >
+        <button onClick={() => navigate('/')} className="btn-primary" style={{ padding: '18px', fontSize: '11px', letterSpacing: '3px' }}>
           Seguir Comprando
         </button>
       </div>

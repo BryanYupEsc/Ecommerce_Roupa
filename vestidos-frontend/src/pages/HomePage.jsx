@@ -70,7 +70,8 @@ function HomePage() {
               }}>
                 Colección 2026
               </p>
-              <h1 style={{
+              <h1 className='hero-titulo' 
+                style={{
                 fontFamily: 'var(--font-titulo)',
                 color: 'var(--blanco)',
                 fontSize: '72px',
@@ -133,7 +134,8 @@ function HomePage() {
         </div>
 
         {/* Grid de productos */}
-        <div style={{
+        <div className='productos-grid'
+          style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
           gap: '32px',

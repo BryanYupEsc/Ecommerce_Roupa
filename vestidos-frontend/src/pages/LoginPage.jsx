@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import useAuthStore from '../store/authStore'
 
 function LoginPage() {
+  // componentes para el formulario
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-
+  const setUser = useAuthStore((state) => state.setUser)
   const handleLogin = async () => {
     setLoading(true)
     setError(null)
@@ -23,6 +25,7 @@ function LoginPage() {
       }
       const data = await response.json()
       localStorage.setItem('user', JSON.stringify(data))
+      setUser(data)
       if (data.rol === 'ADMIN') navigate('/admin')
       else navigate('/')
     } catch (err) {
@@ -46,10 +49,16 @@ function LoginPage() {
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '100vh' }}>
+    <div className='login-grid'
+      style={{
+        display: 'grid', 
+        gridTemplateColumns: '1fr 1fr', 
+        minHeight: '100vh' 
+      }}>
 
       {/* Panel izquierdo decorativo */}
-      <div style={{
+      <div  className='login-panel-izquierdo' 
+        style={{
         backgroundColor: 'var(--negro)',
         display: 'flex',
         flexDirection: 'column',

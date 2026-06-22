@@ -1,5 +1,5 @@
 /* =============================================
-   GLOBAL negro dorado
+  GLOBAL negro dorado
 ============================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap');
@@ -86,4 +86,59 @@ body {
   font-weight: 300;
   letter-spacing: 4px;
   text-transform: uppercase;
+}
+
+
+/* =============================================
+  RESPONSIVE - MÓVIL
+============================================= */
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: block !important;
+  }
+
+  .nav-links-desktop {
+    display: none !important;
+  }
+
+  .nav-user-desktop {
+    display: none !important;
+  }
+
+  .hamburger-placeholder {
+    display: block !important;
+  }
+
+  /* Hero responsive */
+  .hero-titulo {
+    font-size: 40px !important;
+    letter-spacing: 4px !important;
+  }
+
+  /* Grid productos responsive */
+  .productos-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: '16px' !important;
+    padding: '16px' !important;
+  }
+
+  /* Footer responsive */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 32px !important;
+  }
+
+  /* Checkout y carrito responsive */
+  .checkout-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Login responsive */
+  .login-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .login-panel-izquierdo {
+    display: none !important;
+  }
 }
